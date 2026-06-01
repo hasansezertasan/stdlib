@@ -1,0 +1,38 @@
+# Language-agnostic test fixtures for the `functional` domain.
+#
+# Functions aren't YAML-encodable, so each test names a `scenario` that the
+# test runner is expected to implement. The runner exposes these helper
+# functions to the combinator under test:
+#
+#   double(x)     -> x * 2
+#   increment(x)  -> x + 1
+#   square(x)     -> x * x
+#   add(a, b)     -> a + b
+#   add3(a, b, c) -> a + b + c
+#
+# Each test specifies:
+#   scenario: identifier for what to do
+#   input:    the value(s) to feed the produced function
+#   expected: the result
+
+compose:
+  - { scenario: "double_after_increment",          input: 3,  expected: 8 }   # double(increment(3))
+  - { scenario: "identity",                        input: 7,  expected: 7 }   # compose() with no fns
+  - { scenario: "single_double",                   input: 5,  expected: 10 }  # compose(double)
+  - { scenario: "square_double_increment",         input: 2,  expected: 36 }  # square(double(increment(2))) = square(6)
+
+pipe:
+  - { scenario: "increment_then_double",           input: 3,  expected: 8 }   # double(increment(3))
+  - { scenario: "identity",                        input: 7,  expected: 7 }
+  - { scenario: "increment_double_square",         input: 2,  expected: 36 }  # square(double(increment(2)))
+
+memoize:
+  # `calls` records the underlying fn invocation count after the listed sequence of args.
+  - { scenario: "memoize_square",  args: [3, 3, 3],            expected_results: [9, 9, 9],     expected_calls: 1 }
+  - { scenario: "memoize_square",  args: [3, 4, 3, 4],         expected_results: [9, 16, 9, 16], expected_calls: 2 }
+  - { scenario: "memoize_square",  args: [],                   expected_results: [],            expected_calls: 0 }
+
+curry:
+  - { scenario: "curry_add",   applications: [3, 4],     expected: 7 }
+  - { scenario: "curry_add3",  applications: [1, 2, 3],  expected: 6 }
+  - { scenario: "curry_add3",  applications: [10, 20, 30], expected: 60 }

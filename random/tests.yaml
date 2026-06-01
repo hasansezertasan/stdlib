@@ -1,0 +1,39 @@
+# Language-agnostic test fixtures for the `random` domain.
+#
+# Random output is PRNG-dependent and not portable, so these fixtures specify
+# INVARIANTS the runner must check, not concrete return values. The runner
+# constructs an `rng` from the `seed` field and may call the function many
+# times to verify probabilistic properties.
+
+pick_invariants:
+  - { seed: 1, seq: [1, 2, 3, 4, 5],   trials: 100, must_be_member: true }
+  - { seed: 42, seq: ["a", "b", "c"],  trials: 50,  must_be_member: true }
+
+pick_errors:
+  - { seed: 1, seq: [] }
+
+shuffle_invariants:
+  - { seed: 1, seq: [1, 2, 3, 4, 5],   trials: 10, preserves_length: true, preserves_multiset: true }
+  - { seed: 42, seq: [],               trials: 5,  preserves_length: true, preserves_multiset: true }
+  - { seed: 7, seq: ["a", "a", "b"],   trials: 20, preserves_length: true, preserves_multiset: true }
+
+shuffle_determinism:
+  # Two shuffles with the same seed must produce the same output.
+  - { seed: 1, seq: [1, 2, 3, 4, 5] }
+  - { seed: 42, seq: ["x", "y", "z", "w"] }
+
+weighted_pick_zero_weight:
+  # Items with weight 0 must never be selected.
+  - { seed: 1, items: ["a", "b", "c"], weights: [1, 0, 1], trials: 200, never_selected: "b" }
+  - { seed: 7, items: [1, 2, 3, 4],    weights: [0, 1, 0, 0], trials: 100, never_selected_indices: [0, 2, 3] }
+
+weighted_pick_uniform:
+  # With equal weights, distribution should be roughly uniform.
+  # tolerance: each item's count within ±20% of expected over `trials` samples.
+  - { seed: 1, items: ["a", "b", "c", "d"], weights: [1, 1, 1, 1], trials: 4000, tolerance_pct: 20 }
+
+weighted_pick_errors:
+  - { seed: 1, items: ["a", "b"],   weights: [1] }            # mismatched lengths
+  - { seed: 1, items: [],           weights: [] }             # empty
+  - { seed: 1, items: ["a"],        weights: [-1] }           # negative weight
+  - { seed: 1, items: ["a", "b"],   weights: [0, 0] }         # all zero

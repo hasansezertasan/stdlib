@@ -1,0 +1,54 @@
+# Language-agnostic test fixtures for the `dates` domain.
+
+parse_iso:
+  - input: "2024-01-15"
+    expected: { year: 2024, month: 1, day: 15 }
+  - input: "2024-02-29"
+    expected: { year: 2024, month: 2, day: 29 }
+  - input: "1999-12-31"
+    expected: { year: 1999, month: 12, day: 31 }
+
+parse_iso_errors:
+  - { input: "2023-02-29" }   # not a leap year
+  - { input: "2024-13-01" }
+  - { input: "2024-01-32" }
+  - { input: "2024/01/15" }
+  - { input: "not-a-date" }
+  - { input: "" }
+
+add_days:
+  - { input: ["2024-01-31", 1],   expected: "2024-02-01" }
+  - { input: ["2024-02-28", 1],   expected: "2024-02-29" }   # leap year
+  - { input: ["2023-02-28", 1],   expected: "2023-03-01" }   # non-leap year
+  - { input: ["2024-03-01", -1],  expected: "2024-02-29" }
+  - { input: ["2024-12-31", 1],   expected: "2025-01-01" }
+  - { input: ["2024-01-01", 0],   expected: "2024-01-01" }
+  - { input: ["2024-01-01", 365], expected: "2024-12-31" }
+  - { input: ["2024-01-01", -1],  expected: "2023-12-31" }
+
+days_between:
+  - { input: ["2024-01-01", "2024-01-31"], expected: 30 }
+  - { input: ["2024-01-31", "2024-01-01"], expected: -30 }
+  - { input: ["2024-01-01", "2024-01-01"], expected: 0 }
+  - { input: ["2024-02-28", "2024-03-01"], expected: 2 }   # leap year
+  - { input: ["2023-02-28", "2023-03-01"], expected: 1 }
+  - { input: ["2024-01-01", "2025-01-01"], expected: 366 }   # leap year
+
+is_weekend:
+  - { input: "2024-06-01", expected: true }    # Sat
+  - { input: "2024-06-02", expected: true }    # Sun
+  - { input: "2024-06-03", expected: false }   # Mon
+  - { input: "2024-06-07", expected: false }   # Fri
+
+format_relative:
+  # today=2024-06-15
+  - { input: ["2024-06-15", "2024-06-15"], expected: "today" }
+  - { input: ["2024-06-16", "2024-06-15"], expected: "tomorrow" }
+  - { input: ["2024-06-14", "2024-06-15"], expected: "yesterday" }
+  - { input: ["2024-06-18", "2024-06-15"], expected: "in 3 days" }
+  - { input: ["2024-06-12", "2024-06-15"], expected: "3 days ago" }
+  - { input: ["2024-06-25", "2024-06-15"], expected: "in 10 days" }
+  - { input: ["2024-08-15", "2024-06-15"], expected: "in 2 months" }
+  - { input: ["2024-04-15", "2024-06-15"], expected: "2 months ago" }
+  - { input: ["2026-06-15", "2024-06-15"], expected: "in 2 years" }
+  - { input: ["2022-06-15", "2024-06-15"], expected: "2 years ago" }

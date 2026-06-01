@@ -1,0 +1,46 @@
+# Language-agnostic test fixtures for the `paths` domain.
+# `join` takes a variable number of args; `input` is the list of parts.
+
+join:
+  - { input: ["a", "b", "c"],     expected: "a/b/c" }
+  - { input: ["a/", "b"],         expected: "a/b" }
+  - { input: ["a", "/b", "c"],    expected: "/b/c" }
+  - { input: ["", "a", "", "b"],  expected: "a/b" }
+  - { input: ["/"],               expected: "/" }
+  - { input: [""],                expected: "" }
+  - { input: ["a", "b/", "c"],    expected: "a/b/c" }
+
+parent:
+  - { input: "/a/b/c",   expected: "/a/b" }
+  - { input: "a/b",      expected: "a" }
+  - { input: "file.txt", expected: "" }
+  - { input: "/",        expected: "/" }
+  - { input: "/a",       expected: "/" }
+  - { input: "",         expected: "" }
+
+basename:
+  - { input: "/a/b/c.txt",  expected: "c.txt" }
+  - { input: "file.txt",    expected: "file.txt" }
+  - { input: "/a/b/",       expected: "" }
+  - { input: "/",           expected: "" }
+  - { input: "",            expected: "" }
+
+extension:
+  - { input: "a/b/file.txt",   expected: ".txt" }
+  - { input: "archive.tar.gz", expected: ".gz" }
+  - { input: ".bashrc",        expected: "" }
+  - { input: "README",         expected: "" }
+  - { input: "a.b/c",          expected: "" }    # dot is in directory, not basename
+  - { input: "file.",          expected: "." }
+  - { input: "",               expected: "" }
+
+normalize:
+  - { input: "a/./b/../c",       expected: "a/c" }
+  - { input: "/a/b/../../c",     expected: "/c" }
+  - { input: "a//b///c",         expected: "a/b/c" }
+  - { input: "../../a",          expected: "../../a" }
+  - { input: "",                 expected: "." }
+  - { input: "/",                expected: "/" }
+  - { input: "./a/./b/.",        expected: "a/b" }
+  - { input: "/..",              expected: "/" }   # can't go above root
+  - { input: "a/b/",             expected: "a/b" }
