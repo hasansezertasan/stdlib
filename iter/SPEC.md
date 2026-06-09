@@ -28,16 +28,18 @@ Return the longest prefix of `seq` for which `predicate(item)` is truthy. Stop a
 **Examples:**
 - `take_while([1, 2, 3, 4, 1], lambda x: x < 4)` → `[1, 2, 3]` (stops at 4; the trailing `1` is **not** included)
 
-## `zip_longest(*seqs: sequence, fill: any = null) -> list of lists`
+## `zip_longest(seqs: list of sequences, fill: any = null) -> list of lists`
 
 Like `zip`, but pads shorter sequences with `fill` so the result has length equal to the longest input.
 
+The first argument is a list of sequences (not variadic) so the API is encodable in YAML fixtures: `input: [seqs, fill]`.
+
 **Rules:**
-1. Result length = `max(len(s) for s in seqs)`, or `0` if no sequences.
-2. Each element is a list (not a tuple) of one value per input sequence.
+1. Result length = `max(len(s) for s in seqs)`, or `0` if `seqs` is empty.
+2. Each element is a list (not a tuple) of one value per input sequence, in the order they appear in `seqs`.
 
 **Example:**
-- `zip_longest([1, 2, 3], [10, 20], fill=0)` → `[[1, 10], [2, 20], [3, 0]]`
+- `zip_longest([[1, 2, 3], [10, 20]], fill=0)` → `[[1, 10], [2, 20], [3, 0]]`
 
 ## `flatten(seq: sequence, depth: integer = 1) -> list`
 

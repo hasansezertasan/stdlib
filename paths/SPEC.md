@@ -26,12 +26,14 @@ Return the directory portion of `path`.
 **Rules:**
 1. Returns everything up to (but not including) the final `/`.
 2. If there is no `/`, returns `""`.
-3. `parent("/")` → `"/"`.
+3. If the result would be `""` but `path` is absolute (begins with `/`), return `"/"`.
+4. `parent("/")` → `"/"`.
 
 **Examples:**
 - `parent("/a/b/c")` → `"/a/b"`
 - `parent("a/b")` → `"a"`
 - `parent("file.txt")` → `""`
+- `parent("/a")` → `"/"`
 
 ## `basename(path: string) -> string`
 
