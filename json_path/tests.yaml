@@ -1,0 +1,63 @@
+# Language-agnostic test fixtures for the `json_path` domain.
+
+get_path:
+  - input: [{ a: { b: 42 } }, "a.b"]
+    expected: 42
+  - input: [{ items: [{ name: "x" }, { name: "y" }] }, "items.0.name"]
+    expected: "x"
+  - input: [{ items: [{ name: "x" }, { name: "y" }] }, "items.1.name"]
+    expected: "y"
+  - input: [{ a: 1 }, "a.b"]
+    expected: null
+  - input: [{ a: 1 }, "missing"]
+    expected: null
+  - input: [{ a: 1 }, ""]
+    expected: { a: 1 }
+  - input: [{ a: [1, 2, 3] }, "a.5"]
+    expected: null
+  - input: [{ a: [1, 2, 3] }, "a.x"]
+    expected: null    # string key into list
+
+set_path:
+  - input: [{}, "a.b", 1]
+    expected: { a: { b: 1 } }
+  - input: [{ a: 1 }, "b", 2]
+    expected: { a: 1, b: 2 }
+  - input: [{ a: { b: 1 } }, "a.b", 99]
+    expected: { a: { b: 99 } }
+  - input: [{ a: [1, 2] }, "a.0", 99]
+    expected: { a: [99, 2] }
+  - input: [{ a: 1 }, "", "new"]
+    expected: "new"
+  - input: [{}, "a.b.c.d", 42]
+    expected: { a: { b: { c: { d: 42 } } } }
+
+set_path_errors:
+  - { input: [{ a: [1, 2] }, "a.5", 99] }     # missing list index
+  - { input: [{ a: 1 }, "a.b", 99] }          # intermediate scalar
+
+merge_deep:
+  - input: [{ a: 1, b: 2 }, { b: 3, c: 4 }]
+    expected: { a: 1, b: 3, c: 4 }
+  - input: [{ a: { x: 1 } }, { a: { y: 2 } }]
+    expected: { a: { x: 1, y: 2 } }
+  - input: [{ a: { x: 1, y: 1 } }, { a: { y: 2 } }]
+    expected: { a: { x: 1, y: 2 } }
+  - input: [{ a: [1, 2] }, { a: [3] }]
+    expected: { a: [3] }    # lists replaced wholesale
+  - input: [{}, { a: 1 }]
+    expected: { a: 1 }
+  - input: [{ a: 1 }, {}]
+    expected: { a: 1 }
+
+flatten:
+  - input: { a: { b: 1, c: [10, 20] } }
+    expected: { "a.b": 1, "a.c.0": 10, "a.c.1": 20 }
+  - input: {}
+    expected: {}
+  - input: { a: [] }
+    expected: {}
+  - input: { a: 1, b: 2 }
+    expected: { a: 1, b: 2 }
+  - input: { x: [{ k: 1 }, { k: 2 }] }
+    expected: { "x.0.k": 1, "x.1.k": 2 }

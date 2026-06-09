@@ -1,0 +1,44 @@
+# Language-agnostic test fixtures for the `iter` domain.
+#
+# `take_while` uses named predicates (see collections/tests.yaml).
+# Recognized predicates: is_even, is_positive, is_truthy, lt_4 (x < 4)
+
+take:
+  - { input: [[1, 2, 3, 4, 5], 3],  expected: [1, 2, 3] }
+  - { input: [[1, 2, 3], 10],       expected: [1, 2, 3] }
+  - { input: [[1, 2, 3], 0],        expected: [] }
+  - { input: [[1, 2, 3], -1],       expected: [] }
+  - { input: [[], 5],               expected: [] }
+
+drop:
+  - { input: [[1, 2, 3, 4, 5], 3],  expected: [4, 5] }
+  - { input: [[1, 2, 3], 10],       expected: [] }
+  - { input: [[1, 2, 3], 0],        expected: [1, 2, 3] }
+  - { input: [[1, 2, 3], -1],       expected: [1, 2, 3] }
+  - { input: [[], 5],               expected: [] }
+
+take_while:
+  - input: [[1, 2, 3, 4, 1], "lt_4"]
+    expected: [1, 2, 3]
+  - input: [[2, 4, 6, 7, 8], "is_even"]
+    expected: [2, 4, 6]
+  - input: [[], "is_truthy"]
+    expected: []
+  - input: [[7, 1, 2], "lt_4"]
+    expected: []
+
+zip_longest:
+  - { input: [[[1, 2, 3], [10, 20]], 0], expected: [[1, 10], [2, 20], [3, 0]] }
+  - { input: [[[1, 2], [10, 20]], 0],    expected: [[1, 10], [2, 20]] }
+  - { input: [[[]], 0],                  expected: [] }
+  - { input: [[[1], [2], [3]], 0],       expected: [[1, 2, 3]] }
+  - { input: [[[1, 2, 3]], 0],           expected: [[1], [2], [3]] }
+
+flatten:
+  - { input: [[[1, 2], [3, 4]], 1],         expected: [1, 2, 3, 4] }
+  - { input: [[1, [2, [3, [4]]]], -1],      expected: [1, 2, 3, 4] }
+  - { input: [[1, [2, [3]]], 1],            expected: [1, 2, [3]] }
+  - { input: [[1, [2, [3]]], 2],            expected: [1, 2, 3] }
+  - { input: [[1, 2, 3], 0],                expected: [1, 2, 3] }
+  - { input: [[], 1],                       expected: [] }
+  - { input: [["ab", ["cd"]], 1],           expected: ["ab", "cd"] }   # strings are atoms

@@ -1,0 +1,39 @@
+# Language-agnostic test fixtures for the `money` domain.
+
+format_currency:
+  - { input: [12345, "USD"],     expected: "$123.45" }
+  - { input: [1234567, "USD"],   expected: "$12,345.67" }
+  - { input: [0, "USD"],         expected: "$0.00" }
+  - { input: [1, "USD"],         expected: "$0.01" }
+  - { input: [-500, "EUR"],      expected: "-€5.00" }
+  - { input: [1234, "JPY"],      expected: "¥1,234" }
+  - { input: [1000000, "JPY"],   expected: "¥1,000,000" }
+  - { input: [100, "GBP"],       expected: "£1.00" }
+  - { input: [9999999, "TRY"],   expected: "₺99,999.99" }
+
+format_currency_errors:
+  - { input: [100, "XXX"] }      # unknown currency
+
+parse_currency:
+  - { input: ["$123.45", "USD"],     expected: 12345 }
+  - { input: ["$12,345.67", "USD"],  expected: 1234567 }
+  - { input: ["$0.00", "USD"],       expected: 0 }
+  - { input: ["¥1234", "JPY"],       expected: 1234 }
+  - { input: ["¥1,234", "JPY"],      expected: 1234 }
+  - { input: ["-€5.00", "EUR"],      expected: -500 }
+  - { input: ["£1.00", "GBP"],       expected: 100 }
+
+parse_currency_errors:
+  - { input: ["$1.5", "USD"] }       # wrong decimal places
+  - { input: ["€100", "USD"] }       # wrong symbol
+  - { input: ["$abc", "USD"] }
+  - { input: ["", "USD"] }
+
+round_to_cents:
+  - { input: [1.234, "USD"],     expected: 123 }
+  - { input: [1.235, "USD"],     expected: 124 }   # half away from zero
+  - { input: [-1.235, "USD"],    expected: -124 }  # half away from zero
+  - { input: [0.005, "USD"],     expected: 1 }
+  - { input: [0, "USD"],         expected: 0 }
+  - { input: [1234.5, "JPY"],    expected: 1235 }
+  - { input: [1234.4, "JPY"],    expected: 1234 }

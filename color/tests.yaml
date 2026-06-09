@@ -1,0 +1,41 @@
+# Language-agnostic test fixtures for the `color` domain.
+# HSL float comparisons use is_close(rel_tol=1e-3, abs_tol=1e-3) at the runner.
+
+hex_to_rgb:
+  - { input: "#ff0000",  expected: [255, 0, 0] }
+  - { input: "#00ff00",  expected: [0, 255, 0] }
+  - { input: "#0000ff",  expected: [0, 0, 255] }
+  - { input: "#abc",     expected: [170, 187, 204] }
+  - { input: "FFFFFF",   expected: [255, 255, 255] }
+  - { input: "#000000",  expected: [0, 0, 0] }
+  - { input: "fff",      expected: [255, 255, 255] }
+  - { input: "#3366CC",  expected: [51, 102, 204] }
+
+hex_to_rgb_errors:
+  - { input: "#xyz" }
+  - { input: "#ff00" }      # wrong length
+  - { input: "" }
+  - { input: "#1234567" }
+
+rgb_to_hex:
+  - { input: [255, 0, 0],     expected: "#ff0000" }
+  - { input: [0, 255, 0],     expected: "#00ff00" }
+  - { input: [170, 187, 204], expected: "#aabbcc" }
+  - { input: [0, 0, 0],       expected: "#000000" }
+  - { input: [255, 255, 255], expected: "#ffffff" }
+  - { input: [300, -5, 128],  expected: "#ff0080" }   # clamped
+
+rgb_to_hsl:
+  - { input: [255, 0, 0],     expected: [0.0, 1.0, 0.5] }
+  - { input: [0, 255, 0],     expected: [120.0, 1.0, 0.5] }
+  - { input: [0, 0, 255],     expected: [240.0, 1.0, 0.5] }
+  - { input: [128, 128, 128], expected: [0.0, 0.0, 0.502] }
+  - { input: [170, 187, 204], expected: [210.0, 0.25, 0.733] }
+
+lighten:
+  - { input: ["#808080", 0.2],   expected: "#b3b3b3" }
+  - { input: ["#ff0000", -0.25], expected: "#800000" }
+  - { input: ["#000000", 1.0],   expected: "#ffffff" }
+  - { input: ["#ffffff", -1.0],  expected: "#000000" }
+  - { input: ["#3366cc", 0.1],   expected: "#5c85d6" }
+  - { input: ["#808080", 0.0],   expected: "#808080" }

@@ -1,0 +1,52 @@
+# Language-agnostic test fixtures for the `urls` domain.
+
+parse:
+  - input: "https://example.com"
+    expected: { scheme: "https", host: "example.com", port: null, path: "", query: "", fragment: "" }
+  - input: "https://Example.com:8443/path/x?a=1&b=2#top"
+    expected: { scheme: "https", host: "example.com", port: 8443, path: "/path/x", query: "a=1&b=2", fragment: "top" }
+  - input: "http://localhost:8080/"
+    expected: { scheme: "http", host: "localhost", port: 8080, path: "/", query: "", fragment: "" }
+  - input: "https://x.com/?q=1"
+    expected: { scheme: "https", host: "x.com", port: null, path: "/", query: "q=1", fragment: "" }
+  - input: "https://x.com/a#section"
+    expected: { scheme: "https", host: "x.com", port: null, path: "/a", query: "", fragment: "section" }
+
+parse_errors:
+  - { input: "ftp://example.com" }
+  - { input: "not a url" }
+  - { input: "" }
+
+build:
+  - input: { scheme: "https", host: "example.com" }
+    expected: "https://example.com"
+  - input: { scheme: "https", host: "example.com", port: 443 }
+    expected: "https://example.com"   # default port elided
+  - input: { scheme: "http", host: "example.com", port: 80 }
+    expected: "http://example.com"
+  - input: { scheme: "https", host: "x.com", port: 8443, path: "/a", query: "q=1", fragment: "top" }
+    expected: "https://x.com:8443/a?q=1#top"
+  - input: { scheme: "https", host: "x.com", path: "/a" }
+    expected: "https://x.com/a"
+
+add_query_param:
+  - { input: ["https://x.com/a", "q", "hello world"], expected: "https://x.com/a?q=hello%20world" }
+  - { input: ["https://x.com/a?p=1", "q", "2"],       expected: "https://x.com/a?p=1&q=2" }
+  - { input: ["https://x.com/a", "q", "a&b=c"],       expected: "https://x.com/a?q=a%26b%3Dc" }
+  - { input: ["https://x.com/a?q=1", "q", "2"],       expected: "https://x.com/a?q=1&q=2" }   # multi-value
+  - { input: ["https://x.com/a", "tag", "x-y_z.~"],   expected: "https://x.com/a?tag=x-y_z.~" }  # unreserved
+
+strip_query:
+  - { input: "https://x.com/a?p=1#top", expected: "https://x.com/a" }
+  - { input: "https://x.com/a",         expected: "https://x.com/a" }
+  - { input: "https://x.com/a#top",     expected: "https://x.com/a" }
+  - { input: "https://x.com/?q=1",      expected: "https://x.com/" }
+
+url_join:
+  - { input: ["https://x.com/a/b", "c"],          expected: "https://x.com/a/c" }
+  - { input: ["https://x.com/a/b/", "c"],         expected: "https://x.com/a/b/c" }
+  - { input: ["https://x.com/a", "/b"],           expected: "https://x.com/b" }
+  - { input: ["https://x.com/a", "https://y.com/"], expected: "https://y.com/" }
+  - { input: ["https://x.com/a/b", "../c"],       expected: "https://x.com/c" }
+  - { input: ["https://x.com/a?p=1", "?q=2"],     expected: "https://x.com/a?q=2" }
+  - { input: ["https://x.com/a", "#section"],     expected: "https://x.com/a#section" }

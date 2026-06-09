@@ -1,0 +1,35 @@
+# Language-agnostic test fixtures for the `strings` domain.
+# Each entry: function name, args, and expected return value.
+
+slugify:
+  - { input: "Hello, World!",            expected: "hello-world" }
+  - { input: "  Multiple   Spaces  ",    expected: "multiple-spaces" }
+  - { input: "___underscores___",        expected: "underscores" }
+  - { input: "Café & Crème",             expected: "caf-cr-me" }
+  - { input: "!!!",                      expected: "" }
+  - { input: "",                         expected: "" }
+  - { input: "already-a-slug",           expected: "already-a-slug" }
+  - { input: "MiXeD_CaSe-123",           expected: "mixed-case-123" }
+
+truncate:
+  - { input: ["hello world", 11],                    expected: "hello world" }
+  - { input: ["hello world", 8],                     expected: "hello..." }
+  - { input: ["hello world", 5],                     expected: "he..." }
+  - { input: ["hello", 2],                           expected: ".." }
+  - { input: ["hello world", 20],                    expected: "hello world" }
+  - { input: ["hello world", 7, "…"],                expected: "hello …" }
+  - { input: ["abcdef", 6],                          expected: "abcdef" }
+  - { input: ["abcdef", 0],                          expected: "" }
+
+pluralize:
+  - { input: ["cat", 1],     expected: "cat" }
+  - { input: ["cat", 0],     expected: "cats" }
+  - { input: ["cat", 2],     expected: "cats" }
+  - { input: ["city", 3],    expected: "cities" }
+  - { input: ["day", 2],     expected: "days" }
+  - { input: ["box", 2],     expected: "boxes" }
+  - { input: ["bus", 2],     expected: "buses" }
+  - { input: ["quiz", 2],    expected: "quizes" }  # naive v1 rule
+  - { input: ["church", 2],  expected: "churches" }
+  - { input: ["dish", 2],    expected: "dishes" }
+  - { input: ["boy", 2],     expected: "boys" }
